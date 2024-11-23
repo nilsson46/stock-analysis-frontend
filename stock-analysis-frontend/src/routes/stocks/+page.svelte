@@ -20,7 +20,8 @@
   });
 
   function setStocks(newStocks: { symbol: string; name: string; price: number }[]) {
-    stocks = newStocks;
+    console.log('Updating stocks:', newStocks);
+    stocks = [...newStocks];
   }
 </script>
 
@@ -28,4 +29,4 @@
   <p>Error: {error}</p>
 {/if}
 <StockList {stocks} />
-<AddStock {stocks} {setStocks} />
+<AddStock fetchStocks={() => fetch('http://localhost:8085/stocks').then(res => res.json()).then(setStocks)} />

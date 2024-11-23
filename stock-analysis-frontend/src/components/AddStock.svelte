@@ -1,7 +1,5 @@
 <script lang="ts">
-    export let stocks: { symbol: string; name: string; price: number }[];
-    export let setStocks: (stocks: { symbol: string; name: string; price: number }[]) => void;
-  
+    export let fetchStocks: () => Promise<void>;
     let name = '';
     let price = 0;
     let symbol = '';
@@ -20,9 +18,12 @@
           const errorData = await response.json();
           throw new Error(errorData.error || `Error adding stock: ${response.statusText}`);
         }
-        const newStock = await response.json();
-        setStocks([...stocks, newStock]);
+        await fetchStocks(); // Fetch the updated list of stocks
         error = null; // Clear any previous error
+        // Clear input fields after successful addition
+        name = '';
+        price = 0;
+        symbol = '';
       } catch (err) {
         error = (err as Error).message;
         console.error('Failed to add stock:', err);
