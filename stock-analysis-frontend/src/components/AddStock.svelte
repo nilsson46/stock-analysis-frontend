@@ -5,6 +5,7 @@
     let name = '';
     let price = 0;
     let symbol = '';
+    let error: string | null = null;
   
     async function addStock() {
       try {
@@ -16,11 +17,14 @@
           body: JSON.stringify({ name, price, symbol })
         });
         if (!response.ok) {
-          throw new Error(`Error adding stock: ${response.statusText}`);
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Error adding stock: ${response.statusText}`);
         }
         const newStock = await response.json();
         setStocks([...stocks, newStock]);
+        error = null; // Clear any previous error
       } catch (err) {
+        error = (err as Error).message;
         console.error('Failed to add stock:', err);
       }
     }
@@ -28,6 +32,9 @@
   
   <h2>Add Stock</h2>
   <form on:submit|preventDefault={addStock}>
+    {#if error}
+      <p style="color: red;">{error}</p>
+    {/if}
     <label>
       Name:
       <input type="text" bind:value={name} />
